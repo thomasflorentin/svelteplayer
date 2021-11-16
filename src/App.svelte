@@ -43,8 +43,8 @@
 		let this_src = track.src;
 		let this_cover = track.cover;
 
-		if( currentSrc === this_src)†{
-			alert('dÈj‡ en lecture');
+		if( currentSrc === this_src){
+			alert('d√©j√† en lecture');
 			return;
 		}
 		else {
@@ -52,7 +52,7 @@
 			currentCover = this_cover;
 			
 			player.load(); //call this to just preload the audio without playing
-  		player.play(); //call this to play the song right away
+  			player.play(); //call this to play the song right away
 		}
 	}
 </script>
