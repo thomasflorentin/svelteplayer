@@ -1,75 +1,90 @@
 <script>
-	import { slide } from "svelte/transition";
-	import { elasticInOut } from "svelte/easing";
-	import TodoItem from "./TodoItem.svelte";
+  import AudioPlayer from './AudioPlayer.svelte';
+  import Track from './Track.svelte';
+
+	let currentSrc = "";
+	let currentCover = "";
+  let audio;
 	
-	let input = '';
-	let todos = [];
+  let audioTracks = [
+		{
+			id: Math.random()
+						.toString(36)
+						.substr(2, 9),
+			src: 'https://sveltejs.github.io/assets/music/strauss.mp3',
+			title: 'Strauss',
+			cover: 'https://static.qobuz.com/images/artists/covers/medium/15bed9b001fab597a96242deaa8e5e2f.jpg'
+		},
+		{
+			id: Math.random()
+						.toString(36)
+						.substr(2, 9),
+			src: 'https://sveltejs.github.io/assets/music/holst.mp3',
+			title: 'Holst',
+			cover: 'http://caminodemusica.com/clasica/wp-content/uploads/2013/11/gustav-holst.jpg'
+		},	
+		{
+			id: Math.random()
+						.toString(36)
+						.substr(2, 9),
+			src: 'https://sveltejs.github.io/assets/music/satie.mp3',
+			title: 'Satie',
+			cover: 'https://i.cbc.ca/1.5053067.1552408489!/fileImage/httpImage/erik-satie.jpg'
+		},
+  ];
 	
-	function addTodo() {
-		if( input ) {
-			let newTodo = {
-				text: input,
-				id: Math.random().toString(36).substr(2,9)
-			}
-			todos = [...todos, newTodo];
-		}
-		input = '';
-	}
-	
-	function removeTodo(e) {
-		console.log('removeTodo');
-		let id = e.detail.id;
+	const listenThisTitle = function(e) {
 		
-		const index = todos.findIndex( todo => todo.id === id );
-		todos.splice(index, 1);
-		todos = todos;
+		player = document.getElementById('player');
+
+		let id = e.detail.id; 
+		let track = audioTracks.find(track => track.id === id);
+			
+		let this_src = track.src;
+		let this_cover = track.cover;
+
+		if( currentSrc === this_src) {
+			alert('déjà en lecture');
+			return;
+		}
+		else {
+			currentSrc = this_src;
+			currentCover = this_cover;
+			
+			player.load(); //call this to just preload the audio without playing
+  		player.play(); //call this to play the song right away
+		}
 	}
-	
 </script>
 
-
-<svelte:head>
-	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
-	<script src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
-</svelte:head>
-
-
-<main class="container is-fluid">
-	<div class="columns is-centered is-vcentered is-mobile">
-		<div class="column is-narrow" style="width: 400px;">
-			
-			
-			<h1 class="has-text-centered title">
-				Svelte Todo	
-			</h1>
-			
-			
-			<form class="field has-addons" style="justify-content: center" on:submit|preventDefault={addTodo}>
-				<div class="control">
-					<input bind:value="{input}" class="input" type="text" placeholder="Que faire aujourd'hui ?">
-				</div>
-				<div class="control">
-					<button class="button is-primary">
-						<span class="icon is-small"><i class="fas fa-plus"></i></span>
-					</button>
-				</div>
-			</form>
-			
-			
-			<ul class:list={todos.length > 0}>
-				{#each todos as todo (todo.id)}
-					<TodoItem {...todo} on:removeTodo={removeTodo} />
-				
-				{:else}
-					<li class="has-text-centered" transition:slide="{{delay: 600, duration: 300, easing: elasticInOut}}">
-						Rien à faire aujourd'hui !
-					</li>
-				
-				{/each}
-			</ul>
-			
-			
-		</div>
+<main>
+	<div id="app" >
+		<AudioPlayer currentSrc={currentSrc} currentCover={currentCover} />
+		<ul class="tracks_list">
+			{#each audioTracks as track}
+				<Track {...track} on:listenThisTitle={listenThisTitle} />
+			{/each}
+		</ul>
 	</div>
-</main>
+</main> 
+<style>
+	
+	main {
+		background: gray;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 100vh;
+	}
+	#app {
+		background: white;
+		border: 1px solid gray;
+		width: 400px;
+		border-radius: 10px;
+	}
+	.tracks_list {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+</style>
